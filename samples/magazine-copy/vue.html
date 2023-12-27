@@ -1,60 +1,67 @@
-<!doctype html>
- <html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-<meta name="viewport" content="width = device-width, minimum-scale=1,maximum-scale=1, user-scalable = no" />
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>Las Vegas</title>
-<script type="text/javascript" src="assets/scripts/jquery.min.1.7.js"></script>
+    <title>Vue.js Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script type="text/javascript" src="assets/scripts/jquery.min.1.7.js"></script>
 <script type="text/javascript" src="assets/scripts/underscore.js"></script>
 <script type="text/javascript" src="assets/scripts/Backbone.js"></script>
 <link type="text/css" rel="stylesheet" href="assets/css/flipify-viewer.css"></link>
 <link type="text/css" rel="stylesheet" href="assets/css/turn.css"></link>
 <link type="text/css" rel="stylesheet" href="assets/css/viewer.css"></link>
 
-</head>
-<body>
-
-<div id="viewer">
-<div class="bar-container">
-
-  <div class="bar">
-    <div class="edges">
-      <div class="bg"></div>
-    </div>
-    <div class="items">
-      <div class="item"><i class="icon zoom-in"></i></div>
-      <div class="item"><i class="icon zoom-out"></i></div>
-      <div class="item"><i class="icon prev-page"></i></div>
-      <div class="item"><i class="icon next-page"></i></div>
-      <div class="item"><i class="icon share"></i></div>
-      <div class="item"><i class="icon clip"></i></div>
-    </div>
-  </div>
-</div>
-
-
-<div class="magazine-viewport" style="width:100%; height:100%;">
-  <div class="magazine turn-magazine" id="magazine">
-    <div ignore="1" class="control control-previous-page"> <div><i></i></div> </div>
-    <div ignore="1" class="control control-next-page"> <div><i></i></div> </div>
-  	</div>
-</div>
-
-<!-- Thumbnails -->
-  <div class="bottom">
-    <div class="edges">
-    	<div class="thumbnails">
-    	</div>
-    </div>
-  </div>
-</div>
 <script type="text/javascript" src="assets/scripts/turn.min.js"></script>
 <!-- <script type="text/javascript" src="assets/scripts/1turn.min.js"></script> -->
 <!-- <script type="text/javascript" src="assets/scripts/handle.js"></script> -->
 <script type="text/javascript" src="assets/scripts/Hammer.js"></script>
-<script type="text/javascript">
 
-Issue = Backbone.Model.extend({
+</head>
+<body>
+
+      <div id="viewer">
+        <div class="bar-container">
+
+          <div class="bar">
+            <div class="edges">
+              <div class="bg"></div>
+            </div>
+            <div class="items">
+              <div class="item"><i class="icon zoom-in"></i></div>
+              <div class="item"><i class="icon zoom-out"></i></div>
+              <div class="item"><i class="icon prev-page"></i></div>
+              <div class="item"><i class="icon next-page"></i></div>
+              <div class="item"><i class="icon share"></i></div>
+              <div class="item"><i class="icon clip"></i></div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="magazine-viewport" style="width:100%; height:100%;">
+          <div class="magazine turn-magazine" id="magazine">
+            <div ignore="1" class="control control-previous-page"> <div><i></i></div> </div>
+            <div ignore="1" class="control control-next-page"> <div><i></i></div> </div>
+            </div>
+        </div>
+
+        <!-- Thumbnails -->
+          <div class="bottom">
+            <div class="edges">
+              <div class="thumbnails">
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+    <script>
+        new Vue({
+            el: '#viewer',
+            data: {
+
+            },
+            mounted() {
+              Issue = Backbone.Model.extend({
   defaults: {
       pages: 1,
       path: "statics/issue/",
@@ -399,9 +406,7 @@ function decodeParams(j) {
 }
 ;
 
-
-
-  flipify({
+              flipify({
     id: 1,
     name: 'Las Vegas',
     pages: 12,
@@ -409,6 +414,11 @@ function decodeParams(j) {
     pageHeight: 600*4,
     path: 'statics/issue/'
   });
-</script>
+            },
+            methods: {
+
+            },
+        });
+    </script>
 </body>
 </html>
