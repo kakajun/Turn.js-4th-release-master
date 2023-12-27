@@ -1,0 +1,343 @@
+Issue = Backbone.Model.extend({
+  defaults: {
+      pages: 1,
+      path: "statics/issue/",
+      prefixes: !1
+  },
+  initialize: function() {}
+});
+Page = Backbone.Model.extend({
+  idAttribute: "page",
+  fetchRegions: function() {
+      this.set({
+          regions: [{
+              i: 0,
+              t: "0",
+              x: 0,
+              y: 0,
+              w: 0,
+              h: 0,
+              url: "www.google.com"
+          }]
+      })
+  },
+  fetchDictionary: function() {},
+  getResource: function(j) {
+      var m = this.get("issue")
+        , s = m.get("prefixes")
+        , s = s ? s[this.get("page")] + "/" : this.get("page") + "/";
+      return m.get("path") + s + j
+  }
+});
+var PageList = Backbone.Collection.extend({
+  model: Page
+});
+PageView = Backbone.View.extend({
+  tagName: "div",
+  initialize: function() {
+      this.listenTo(this.model, "destroy", this.remove);
+      this.listenTo(this.model, "change:regions", this.showRegions);
+      this.render()
+  },
+  render: function() {
+      this.$el.html('<div class="gradient"></div><div class="loader"><i></i></div>')
+  },
+  loadPage: function() {
+      var j = this
+        , m = $("<img />");
+      m.load(function() {
+          j.$el.find(".loader").remove();
+          $(this).css({
+              width: "100%",
+              height: "100%"
+          });
+          $(this).appendTo(j.$el);
+          "single" == $("#magazine").turn("display") && $("#magazine .p0").data("f").tPage == j.model.get("page") && ($("#magazine .p0").find("*").remove(),
+          j.$el.clone(!1).css({
+              opacity: "0.2",
+              overflow: "hidden"
+          }).transform("rotateY(180deg)", "50% 50%").appendTo($("#magazine .p0")))
+      });
+      m.attr("src", this.model.getResource("large.jpg"));
+      this.model.fetchRegions()
+  },
+  showRegions: function() {}
+});
+Magazine = Backbone.View.extend({
+  el: $("#magazine"),
+  events: {
+      turning: "turning",
+      turned: "turned",
+      tap: "tap",
+      doubleTap: "doubleTap",
+      pinching: "pinching",
+      scrolling: "scrolling",
+      zooming: "zooming",
+      zoomed: "zoomed",
+      missing: "missing",
+      removePage: "removePage"
+  },
+  initialize: function(j) {
+      this.app = j.app;
+      this.pages = new PageList
+  },
+  render: function() {
+      this.$el.turn({
+          view: this,
+          width: this.model.get("pageWidth"),
+          height: this.model.get("pageHeight"),
+          pages: this.model.get("pages"),
+          duration: 500,
+          responsive: !0,
+          autoCenter: !0,
+          smartFlip: !0,
+          swipe: !0,
+          slider: ".thumbnails",
+          cornerPosition: "50px 20px",
+          events: {
+              newThumbnail: $.proxy(this.newThumbnail, this)
+          }
+      })
+  },
+  turning: function() {
+      $.isTouch ? this.$el.removeClass("animated") : this.$el.addClass("animated")
+  },
+  turned: function(j, m) {
+      $.isTouch || this.$el.removeClass("animated");
+      1 == m && this.$el.turn("peel", "br")
+  },
+  tap: function(j) {
+      !$.isTouch && !$("html").hasClass("touch") && ($(j.target).hasClass("region") || (1 == this.$el.turn("zoom") ? this.$el.turn("zoomIn", j) : this.$el.turn("zoomOut")))
+  },
+  doubleTap: function(j) {
+      var m = $(".magazine-viewport").data();
+      m.navTimer && (clearInterval(m.navTimer),
+      delete m.navTimer);
+      if ($.isTouch || $("html").hasClass("touch"))
+          1 == this.$el.turn("zoom") ? this.$el.turn("zoomIn", j) : this.$el.turn("zoomOut")
+  },
+  pinching: function(j) {
+      this.$el.turn("zoom", 1, j)
+  },
+  scrolling: function() {},
+  zooming: function() {
+      this.$el.removeClass("animated")
+  },
+  zoomed: function() {
+      $("html").removeClass("navigation")
+  },
+  missing: function(j, m) {
+      for (var s = 0; s < m.length; s++)
+          this.addPage(m[s])
+  },
+  newThumbnail: function(j, m, s) {
+      j = (j = this.model.get("prefixes")) ? j[m] + "/" : m + "/";
+      $("<img />", {
+          src: this.model.get("path") + j + "thumb.jpg"
+      }).appendTo(s)
+  },
+  addPage: function(j) {
+      var m = this.pages.get(j);
+      m || (m = new Page({
+          page: j,
+          issue: this.model
+      }),
+      this.pages.add(m));
+      m = new PageView({
+          model: m
+      });
+      this.$el.turn("addPage", m.$el, j, {
+          view: m
+      }) && m.loadPage()
+  },
+  removePage: function(j, m) {
+      this.$el.turn("pageData", m).view.stopListening()
+  }
+});
+Flipfiy = Backbone.View.extend({
+  el: $("#viewer"),
+  events: {
+      "tap .control-next-page": "nextPage",
+      "tap .control-previous-page": "previousPage"
+  },
+  initialize: function() {
+      var j = this;
+      this.router = new AppRouter({
+          app: this
+      });
+      $(document).keydown(function(m) {
+          switch (m.keyCode) {
+          case 37:
+              j.magazine.$el.turn("previous");
+              m.preventDefault();
+              break;
+          case 39:
+              j.magazine.$el.turn("next");
+              m.preventDefault();
+              break;
+          case 27:
+              j.magazine.$el.zoom("zoomOut"),
+              m.preventDefault()
+          }
+      });
+      $(".magazine-viewport").bind("tap", function() {
+          if ($("html").hasClass("navigation"))
+              $("html").removeClass("navigation");
+          else {
+              var j = $(this).data();
+              j.navTimer || (j.navTimer = setTimeout(function() {
+                  delete j.navTimer;
+                  $(".magazine").turn("isFlipping") || $("html").addClass("navigation")
+              }, 300))
+          }
+      })
+  },
+  loadIssue: function(j) {
+      this.magazine || (j = new Issue(j),
+      this.magazine = new Magazine({
+          model: j
+      }),
+      this.magazine.render(),
+      this.magazine.$el.bind("turned", $.proxy(this.pageTurned, this)),
+      Backbone.history.start())
+  },
+  nextPage: function() {
+      this.magazine.$el.turn("next")
+  },
+  previousPage: function() {
+      this.magazine.$el.turn("previous")
+  },
+  pageTurned: function(j, m) {
+      this.router.navigate("page/" + m)
+  }
+});
+AppRouter = Backbone.Router.extend({
+  routes: {
+      "page/:number": "setPage",
+      issues: "issues"
+  },
+  initialize: function(j) {
+      this.app = j.app
+  },
+  setPage: function(j) {
+      this.app.magazine.$el.turn("page", j)
+  }
+});
+function flipify(j) {
+  (new Flipfiy).loadIssue(j)
+}
+function addPage(j, m) {
+  m.turn("pages");
+  var s = $("<div />", {
+      "class": ""
+  });
+  m.turn("addPage", s, j) && (s.html('<div class="gradient"></div><div class="loader"><i></i></div>'),
+  loadPage(j, s))
+}
+function loadPage(j, m) {
+  var s = $("<img />");
+  s.mousedown(function(j) {
+      j.preventDefault()
+  });
+  s.load(function() {
+      $(this).css({
+          width: "100%",
+          height: "100%"
+      });
+      $(this).appendTo(m);
+      m.find(".loader").remove()
+  });
+  s.attr("src", "statics/issue/imgs/" + j + "-large.jpg");
+  loadRegions(j, m)
+}
+function loadRegions(j, m) {
+  $.getJSON("pages/" + j + "-regions.json").done(function(j) {
+      $.each(j, function(j, s) {
+          addRegion(s, m)
+      })
+  })
+}
+function addRegion(j, m) {
+  var s = $("<div />", {
+      "class": "region  " + j["class"]
+  })
+    , x = $(".magazine").turn("options")
+    , y = x.width / 2
+    , x = x.height;
+  s.css({
+      top: Math.round(100 * (j.y / x)) + "%",
+      left: Math.round(100 * (j.x / y)) + "%",
+      width: Math.round(100 * (j.width / y)) + "%",
+      height: Math.round(100 * (j.height / x)) + "%"
+  }).attr("region-data", $.param(j.data || ""));
+  s.appendTo(m)
+}
+function regionClick(j) {
+  j = $(j.target);
+  if (j.hasClass("region")) {
+      var m = $.trim(j.attr("class").replace("region", ""));
+      return processRegion(j, m)
+  }
+}
+function processRegion(j, m) {
+  data = decodeParams(j.attr("region-data"));
+  switch (m) {
+  case "link":
+      window.open(data.url);
+      break;
+  case "zoom":
+      var s = j.offset()
+        , x = $(".magazine-viewport").offset()
+        , s = {
+          x: s.left - x.left,
+          y: s.top - x.top
+      };
+      $(".magazine-viewport").zoom("zoomIn", s);
+      break;
+  case "to-page":
+      $(".magazine").turn("page", data.page)
+  }
+}
+function loadLargePage(j, m) {
+  var s = $("<img />");
+  s.load(function() {
+      var j = m.find("img");
+      $(this).css({
+          width: "100%",
+          height: "100%"
+      });
+      $(this).appendTo(m);
+      j.remove()
+  });
+  s.attr("src", "pages/" + j + "-large.jpg")
+}
+function loadSmallPage(j, m) {
+  var s = m.find("img");
+  s.css({
+      width: "100%",
+      height: "100%"
+  });
+  s.unbind("load");
+  s.attr("src", "pages/" + j + "-large.jpg")
+}
+function isChrome() {
+  return -1 != navigator.userAgent.indexOf("Chrome")
+}
+function disableControls(j) {
+  1 == j ? $(".previous-button").hide() : $(".previous-button").show();
+  j == $(".magazine").turn("pages") ? $(".next-button").hide() : $(".next-button").show()
+}
+function resizeViewport() {}
+function zoomTo(j) {
+  1 == $(this).zoom("value") && $(this).zoom("in", j)
+}
+function largeMagazineWidth() {
+  return 2214
+}
+function decodeParams(j) {
+  for (var j = j.split("&"), m, s = {}, x = 0; x < j.length; x++)
+      m = j[x].split("="),
+      s[decodeURIComponent(m[0])] = decodeURIComponent(m[1]);
+  return s
+}
+;
