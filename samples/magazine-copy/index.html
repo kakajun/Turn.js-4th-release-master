@@ -15,42 +15,14 @@
 <body>
 
 <div id="viewer">
-<div class="bar-container">
-
-  <div class="bar">
-    <div class="edges">
-      <div class="bg"></div>
-    </div>
-    <div class="items">
-      <div class="item"><i class="icon zoom-in"></i></div>
-      <div class="item"><i class="icon zoom-out"></i></div>
-      <div class="item"><i class="icon prev-page"></i></div>
-      <div class="item"><i class="icon next-page"></i></div>
-      <div class="item"><i class="icon share"></i></div>
-      <div class="item"><i class="icon clip"></i></div>
-    </div>
-  </div>
-</div>
-
-
 <div class="magazine-viewport" style="width:100%; height:100%;">
   <div class="magazine turn-magazine" id="magazine">
     <div ignore="1" class="control control-previous-page"> <div><i></i></div> </div>
     <div ignore="1" class="control control-next-page"> <div><i></i></div> </div>
   	</div>
 </div>
-
-<!-- Thumbnails -->
-  <div class="bottom">
-    <div class="edges">
-    	<div class="thumbnails">
-    	</div>
-    </div>
-  </div>
 </div>
 <script type="text/javascript" src="assets/scripts/turn.min.js"></script>
-<!-- <script type="text/javascript" src="assets/scripts/1turn.min.js"></script> -->
-<!-- <script type="text/javascript" src="assets/scripts/handle.js"></script> -->
 <script type="text/javascript" src="assets/scripts/Hammer.js"></script>
 <script type="text/javascript">
 
@@ -148,11 +120,7 @@ Magazine = Backbone.View.extend({
           autoCenter: !0,
           smartFlip: !0,
           swipe: !0,
-          slider: ".thumbnails",
           cornerPosition: "50px 20px",
-          events: {
-              newThumbnail: $.proxy(this.newThumbnail, this)
-          }
       })
   },
   turning: function() {
@@ -186,14 +154,7 @@ Magazine = Backbone.View.extend({
       for (var s = 0; s < m.length; s++)
           this.addPage(m[s])
   },
-  newThumbnail: function(j, m, s) {
-      j = (j = this.model.get("prefixes")) ? j[m] + "/" : m + "/";
-      $("<img />", {
-          src: this.model.get("path") + j + "thumb.jpg"
-      }).appendTo(s)
-  },
   addPage: function(j) {
-
       var m = this.pages.get(j);
       m || (m = new Page({
           page: j,
@@ -304,11 +265,12 @@ function loadPage(j, m) {
       $(this).appendTo(m);
       m.find(".loader").remove()
   });
-  s.attr("src", "statics/issue/imgs/" + j + "-large.jpg");
+  s.attr("src", "statics/issue/" + j + "/large.jpg");
+  alert('msg');
   loadRegions(j, m)
 }
 function loadRegions(j, m) {
-  $.getJSON("pages/" + j + "-regions.json").done(function(j) {
+  $.getJSON("statics/issue/" + j +'/'+j+ "-regions.json").done(function(j) {
       $.each(j, function(j, s) {
           addRegion(s, m)
       })
