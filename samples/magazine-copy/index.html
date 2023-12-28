@@ -107,7 +107,6 @@ Magazine = Backbone.View.extend({
       removePage: "removePage"
   },
   initialize: function(j) {
-      this.app = j.app;
       this.pages = new PageList
   },
   render: function() {
@@ -182,9 +181,6 @@ Flipfiy = Backbone.View.extend({
   },
   initialize: function() {
       var j = this;
-      this.router = new AppRouter({
-          app: this
-      });
       $(document).keydown(function(m) {
           switch (m.keyCode) {
           case 37:
@@ -218,7 +214,6 @@ Flipfiy = Backbone.View.extend({
           model: j
       }),
       this.magazine.render(),
-      this.magazine.$el.bind("turned", $.proxy(this.pageTurned, this)),
       Backbone.history.start())
   },
   nextPage: function() {
@@ -227,134 +222,11 @@ Flipfiy = Backbone.View.extend({
   previousPage: function() {
       this.magazine.$el.turn("previous")
   },
-  pageTurned: function(j, m) {
-      this.router.navigate("page/" + m)
-  }
-});
-AppRouter = Backbone.Router.extend({
-  routes: {
-      "page/:number": "setPage",
-      issues: "issues"
-  },
-  initialize: function(j) {
-      this.app = j.app
-  },
-  setPage: function(j) {
-      this.app.magazine.$el.turn("page", j)
-  }
 });
 function flipify(j) {
   (new Flipfiy).loadIssue(j)
 }
 
-function loadPage(j, m) {
-  var s = $("<img />");
-  s.mousedown(function(j) {
-      j.preventDefault()
-  });
-  s.load(function() {
-      $(this).css({
-          width: "100%",
-          height: "100%"
-      });
-      $(this).appendTo(m);
-      m.find(".loader").remove()
-  });
-  s.attr("src", "statics/issue/" + j + "/large.jpg");
-  alert('msg');
-  loadRegions(j, m)
-}
-function loadRegions(j, m) {
-  $.getJSON("statics/issue/" + j +'/'+j+ "-regions.json").done(function(j) {
-      $.each(j, function(j, s) {
-          addRegion(s, m)
-      })
-  })
-}
-function addRegion(j, m) {
-  var s = $("<div />", {
-      "class": "region  " + j["class"]
-  })
-    , x = $(".magazine").turn("options")
-    , y = x.width / 2
-    , x = x.height;
-  s.css({
-      top: Math.round(100 * (j.y / x)) + "%",
-      left: Math.round(100 * (j.x / y)) + "%",
-      width: Math.round(100 * (j.width / y)) + "%",
-      height: Math.round(100 * (j.height / x)) + "%"
-  }).attr("region-data", $.param(j.data || ""));
-  s.appendTo(m)
-}
-function regionClick(j) {
-  j = $(j.target);
-  if (j.hasClass("region")) {
-      var m = $.trim(j.attr("class").replace("region", ""));
-      return processRegion(j, m)
-  }
-}
-function processRegion(j, m) {
-  data = decodeParams(j.attr("region-data"));
-  switch (m) {
-  case "link":
-      window.open(data.url);
-      break;
-  case "zoom":
-      var s = j.offset()
-        , x = $(".magazine-viewport").offset()
-        , s = {
-          x: s.left - x.left,
-          y: s.top - x.top
-      };
-      $(".magazine-viewport").zoom("zoomIn", s);
-      break;
-  case "to-page":
-      $(".magazine").turn("page", data.page)
-  }
-}
-function loadLargePage(j, m) {
-  var s = $("<img />");
-  s.load(function() {
-      var j = m.find("img");
-      $(this).css({
-          width: "100%",
-          height: "100%"
-      });
-      $(this).appendTo(m);
-      j.remove()
-  });
-  s.attr("src", "pages/" + j + "-large.jpg")
-}
-function loadSmallPage(j, m) {
-  var s = m.find("img");
-  s.css({
-      width: "100%",
-      height: "100%"
-  });
-  s.unbind("load");
-  s.attr("src", "pages/" + j + "-large.jpg")
-}
-function isChrome() {
-  return -1 != navigator.userAgent.indexOf("Chrome")
-}
-function disableControls(j) {
-  1 == j ? $(".previous-button").hide() : $(".previous-button").show();
-  j == $(".magazine").turn("pages") ? $(".next-button").hide() : $(".next-button").show()
-}
-function resizeViewport() {}
-function zoomTo(j) {
-  1 == $(this).zoom("value") && $(this).zoom("in", j)
-}
-function largeMagazineWidth() {
-  return 2214
-}
-function decodeParams(j) {
-  for (var j = j.split("&"), m, s = {}, x = 0; x < j.length; x++)
-      m = j[x].split("="),
-      s[decodeURIComponent(m[0])] = decodeURIComponent(m[1]);
-  return s
-}
-;
 
 
   flipify({
