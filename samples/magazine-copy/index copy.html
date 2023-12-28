@@ -71,7 +71,6 @@ PageView = Backbone.View.extend({
       this.$el.html('<div class="gradient"></div><div class="loader"><i></i></div>')
   },
   loadPage: function() {
-
       var j = this
         , m = $("<img />");
       m.load(function() {
@@ -152,7 +151,6 @@ Magazine = Backbone.View.extend({
       $("html").removeClass("navigation")
   },
   missing: function(j, m) {
-
       for (var s = 0; s < m.length; s++)
           this.addPage(m[s])
   },
@@ -246,7 +244,15 @@ AppRouter = Backbone.Router.extend({
 function flipify(j) {
   (new Flipfiy).loadIssue(j)
 }
-
+function addPage(j, m) {
+  alert('msg');
+  m.turn("pages");
+  var s = $("<div />", {
+      "class": ""
+  });
+  m.turn("addPage", s, j) && (s.html('<div class="gradient"></div><div class="loader"><i></i></div>'),
+  loadPage(j, s))
+}
 function loadPage(j, m) {
   var s = $("<img />");
   s.mousedown(function(j) {
