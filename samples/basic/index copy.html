@@ -8,13 +8,12 @@
 <meta name="viewport" content="width = 1050, user-scalable = no" />
 <script type="text/javascript" src="../../extras/jquery.min.1.7.js"></script>
 <script type="text/javascript" src="../../extras/modernizr.2.5.3.min.js"></script>
-<script type="text/javascript" src="../../extras/Hammer.js"></script>
 </head>
 <body>
 
 <div class="flipbook-viewport">
 	<div class="container">
-		<div class="flipbook" style="left:0;top:0">
+		<div class="flipbook">
 			<div style="background-image:url(pages/1.jpg)"></div>
 			<div style="background-image:url(pages/2.jpg)"></div>
 			<div style="background-image:url(pages/3.jpg)"></div>
@@ -41,16 +40,15 @@ function loadApp() {
 	$('.flipbook').turn({
 			// Width
 
-			width:922*4,
+			width:922,
 
 			// Height
 
-			height: 600*4,
+			height:600,
 
 			// Elevation
 
 			elevation: 50,
-			pages:12,
 
 			// Enable gradients
 
@@ -58,13 +56,7 @@ function loadApp() {
 
 			// Auto center this flipbook
 
-			autoCenter: true,
-			duration: 500,
-          responsive: !0,
-          autoCenter: !0,
-          smartFlip: !0,
-          swipe: !0,
-          // cornerPosition: "50px 20px",
+			autoCenter: true
 
 	});
 }
@@ -73,10 +65,11 @@ function loadApp() {
 
 yepnope({
 	test : Modernizr.csstransforms,
+	// yep: ['../../lib/turn.js'],
+	// yep: ['../../lib/turn.js'],
 	yep: ['../../lib/1turn.min.js'],
-	// yep: ['../../lib/turn5.js'],
 	// nope: ['../../lib/turn.html4.min.js'],
-	both: ['css/basic5.css'],
+	both: ['css/basic.css'],
 	complete: loadApp
 });
 

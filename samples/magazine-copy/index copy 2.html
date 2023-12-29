@@ -23,19 +23,37 @@
 </div>
 </div>
 <script type="text/javascript" src="assets/scripts/turn.min.js"></script>
-<!-- <script type="text/javascript" src="assets/scripts/1turn.min.js"></script> -->
 <script type="text/javascript" src="assets/scripts/Hammer.js"></script>
 <script type="text/javascript">
 
 Issue = Backbone.Model.extend({
+  defaults: {
+      pages: 1,
+      path: "statics/issue/",
+      prefixes: !1
+  },
+  initialize: function() {}
 });
 Page = Backbone.Model.extend({
   idAttribute: "page",
+  fetchRegions: function() {
+      this.set({
+          regions: [{
+              i: 0,
+              t: "0",
+              x: 0,
+              y: 0,
+              w: 0,
+              h: 0,
+              url: "www.google.com"
+          }]
+      })
+  },
+  fetchDictionary: function() {},
   getResource: function(j) {
       var m = this.get("issue")
         , s = m.get("prefixes")
         , s = s ? s[this.get("page")] + "/" : this.get("page") + "/";
-        console.log( m.get("path") + s + j,"34333333");
       return m.get("path") + s + j
   }
 });
@@ -46,12 +64,14 @@ PageView = Backbone.View.extend({
   tagName: "div",
   initialize: function() {
       this.listenTo(this.model, "destroy", this.remove);
+      this.listenTo(this.model, "change:regions", this.showRegions);
       this.render()
   },
   render: function() {
       this.$el.html('<div class="gradient"></div><div class="loader"><i></i></div>')
   },
   loadPage: function() {
+
       var j = this
         , m = $("<img />");
       m.load(function() {
@@ -68,24 +88,30 @@ PageView = Backbone.View.extend({
           }).transform("rotateY(180deg)", "50% 50%").appendTo($("#magazine .p0")))
       });
       m.attr("src", this.model.getResource("large.jpg"));
-
+      this.model.fetchRegions()
   },
+  showRegions: function() {}
 });
 Magazine = Backbone.View.extend({
   el: $("#magazine"),
   events: {
       turning: "turning",
       turned: "turned",
+      tap: "tap",
+      doubleTap: "doubleTap",
+      pinching: "pinching",
+      scrolling: "scrolling",
+      zooming: "zooming",
+      zoomed: "zoomed",
       missing: "missing",
       removePage: "removePage"
   },
   initialize: function(j) {
       this.pages = new PageList
-      console.log(this.pages,'pages');
-      console.log(this.model.get("pages"),'get');
   },
   render: function() {
       this.$el.turn({
+          view: this,
           width: this.model.get("pageWidth"),
           height: this.model.get("pageHeight"),
           pages: this.model.get("pages"),
@@ -104,7 +130,28 @@ Magazine = Backbone.View.extend({
       $.isTouch || this.$el.removeClass("animated");
       1 == m && this.$el.turn("peel", "br")
   },
+  tap: function(j) {
+      !$.isTouch && !$("html").hasClass("touch") && ($(j.target).hasClass("region") || (1 == this.$el.turn("zoom") ? this.$el.turn("zoomIn", j) : this.$el.turn("zoomOut")))
+  },
+  doubleTap: function(j) {
+      var m = $(".magazine-viewport").data();
+      m.navTimer && (clearInterval(m.navTimer),
+      delete m.navTimer);
+      if ($.isTouch || $("html").hasClass("touch"))
+          1 == this.$el.turn("zoom") ? this.$el.turn("zoomIn", j) : this.$el.turn("zoomOut")
+  },
+  pinching: function(j) {
+      this.$el.turn("zoom", 1, j)
+  },
+  scrolling: function() {},
+  zooming: function() {
+      this.$el.removeClass("animated")
+  },
+  zoomed: function() {
+      $("html").removeClass("navigation")
+  },
   missing: function(j, m) {
+
       for (var s = 0; s < m.length; s++)
           this.addPage(m[s])
   },
@@ -128,18 +175,60 @@ Magazine = Backbone.View.extend({
 });
 Flipfiy = Backbone.View.extend({
   el: $("#viewer"),
+  events: {
+      "tap .control-next-page": "nextPage",
+      "tap .control-previous-page": "previousPage"
+  },
+  initialize: function() {
+      var j = this;
+      $(document).keydown(function(m) {
+          switch (m.keyCode) {
+          case 37:
+              j.magazine.$el.turn("previous");
+              m.preventDefault();
+              break;
+          case 39:
+              j.magazine.$el.turn("next");
+              m.preventDefault();
+              break;
+          case 27:
+              j.magazine.$el.zoom("zoomOut"),
+              m.preventDefault()
+          }
+      });
+      $(".magazine-viewport").bind("tap", function() {
+          if ($("html").hasClass("navigation"))
+              $("html").removeClass("navigation");
+          else {
+              var j = $(this).data();
+              j.navTimer || (j.navTimer = setTimeout(function() {
+                  delete j.navTimer;
+                  $(".magazine").turn("isFlipping") || $("html").addClass("navigation")
+              }, 300))
+          }
+      })
+  },
   loadIssue: function(j) {
-     j = new Issue(j)
-     console.log(j,'j');
+      this.magazine || (j = new Issue(j),
       this.magazine = new Magazine({
           model: j
-      })
-      this.magazine.render()
+      }),
+      this.magazine.render(),
+      Backbone.history.start())
+  },
+  nextPage: function() {
+      this.magazine.$el.turn("next")
+  },
+  previousPage: function() {
+      this.magazine.$el.turn("previous")
   },
 });
 function flipify(j) {
   (new Flipfiy).loadIssue(j)
 }
+
+
+
   flipify({
     id: 1,
     name: 'Las Vegas',
