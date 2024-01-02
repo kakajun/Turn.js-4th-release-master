@@ -55,19 +55,18 @@
 
 .turn-magazine .control{
 	position:absolute;
-	width:25px;
+	/* width:10px; */
 	height:100%;
-	background:#555;
-	opacity:0;
+	/* background:#555; */
+	/* opacity:0; */
 }
 
 .turn-magazine .control:hover{
-	opacity:0.6;
+
 }
 
 .turn-magazine.first-page .control-next-page,
 .turn-magazine.last-page .control-previous-page{
-	opacity:0.6;
 	-webkit-transition:opacity 200ms ease-in-out;
 	-moz-transition:opacity 200ms ease-in-out;
 	-ms-transition:opacity 200ms ease-in-out;
@@ -80,45 +79,31 @@
  	display:none;
  }
 
-.turn-magazine .control:active{
-	-webkit-transition:none;
-	-moz-transition:none;
-	-ms-transition:none;
-	-o-transition:none;
-	transition:none;
-	opacity:1;
-}
 
-.turn-magazine .control > div{
-	position:absolute;
-	top:50%;
-}
-
-.turn-magazine .control > div > i{
-	margin-top:-50%;
-	display:inline-block;
-	width:20px;
-	height:20px;
-	background-image:url(../imgs/icons@2x.png);
-	background-size:500px 20px;
+.turn-magazine .control{
+    -webkit-mask-box-image-source: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNy4zMjgiIGhlaWdodD0iMzE3LjQ2bW0iIHZpZXdCb3g9IjAgMCAzNS4zMSAxMTM0LjkyIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBiYXNlUHJvZmlsZT0iZnVsbCIgc2hhcGUtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iIHRleHQtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iIGltYWdlLXJlbmRlcmluZz0ib3B0aW1pemVRdWFsaXR5IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCI+PHBhdGggZmlsbD0iI2ZjZmNmYyIgZD0iTTAgMGwzNS4zMSA2LjgxVjExMjguM0wwIDExMzQuOTJ6Ii8+PC9zdmc+");
+    background: -o-repeating-linear-gradient(left,#FCFCFC,#C9C9C9 2px);
+    background: repeating-linear-gradient(to right,#FCFCFC,#C9C9C9 2px);
+    height: 100%;
+    position: absolute;
+    background-size: 100% 100%;
+    z-index: 50;
+    -webkit-transition: width 500ms,right 500ms;
+    -o-transition: width 500ms,right 500ms;
+    transition: width 500ms,right 500ms;
+    cursor: pointer;
 }
 
 .turn-magazine .control-next-page{
 	top:0;
-	right:-25px;
+	right:-12px;
 	border-radius:0 10px 10px 0;
 }
 
-.turn-magazine .control-next-page > div{
-	left:2px;
-}
+
 
 .turn-magazine .control-previous-page > div{
 	right:2px;
-}
-
-.turn-magazine .control-next-page > div > i{
-	background-position:-140px 0;
 }
 
 .turn-magazine .control-previous-page{
@@ -127,7 +112,12 @@
 	border-radius:10px 0 0 10px;
 }
 
-.turn-magazine .control-previous-page > div > i{
-	background-position:-120px 0;
+.tooltip {
+  position: absolute;
+  background-color: #000; /* 黑色背景 */
+  color: #fff; /* 白色文字 */
+	font-size: 13px;
+  padding: 2px;
+  border: 1px solid #000;
+  z-index: 1000;
 }
-
