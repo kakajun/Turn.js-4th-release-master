@@ -55,24 +55,19 @@
 
 .turn-magazine .control{
 	position:absolute;
-	/* width:10px; */
 	height:100%;
-	/* background:#555; */
-	/* opacity:0; */
 }
 
-.turn-magazine .control:hover{
 
-}
 
-.turn-magazine.first-page .control-next-page,
+/* .turn-magazine.first-page .control-next-page,
 .turn-magazine.last-page .control-previous-page{
 	-webkit-transition:opacity 200ms ease-in-out;
 	-moz-transition:opacity 200ms ease-in-out;
 	-ms-transition:opacity 200ms ease-in-out;
 	-o-transition:opacity 200ms ease-in-out;
 	transition:opacity 200ms ease-in-out;
- }
+ } */
 
  .turn-magazine.first-page .control-previous-page,
  .turn-magazine.last-page .control-next-page{
